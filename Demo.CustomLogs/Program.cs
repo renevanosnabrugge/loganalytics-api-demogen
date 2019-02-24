@@ -14,10 +14,10 @@ namespace Demo.CustomLogs
             HttpClient client = new HttpClient();
 
             // Update port # in the following line.
-            client.BaseAddress = new Uri("http://localhost:5900/");
+            client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("api-url"));
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Add("x-api-key", "RuggedDemo");
+            client.DefaultRequestHeaders.Add("x-api-key", Environment.GetEnvironmentVariable("api-key"));
                 
                 //Extract 4 hours for every i
             for (int i = 100; i >=0; i--)
@@ -35,13 +35,14 @@ namespace Demo.CustomLogs
                 la.customlogType = "BuildCompliance";
                 la.json = bc;
                 string json = JsonConvert.SerializeObject(la);
-                Debug.WriteLine($"{bc.BuildDefinitionName} - {bc.BuildNumber} - {bc.BuildStatus} - {bc.HasFourEyes} - {bc.BuildDateTime}");
+                Console.WriteLine($"{bc.BuildDefinitionName} - {bc.BuildNumber} - {bc.BuildStatus} - {bc.HasFourEyes} - {bc.BuildDateTime}");
                 HttpResponseMessage response = client.PostAsJsonAsync("api/logs", la).Result;
+                Console.WriteLine($"Called API: {response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
             }
 
-            Console.WriteLine("Hello World!");
+            Console.WriteLine($"API-URL: {Environment.GetEnvironmentVariable("api-url")}");
         }
 
         private static bool GetFourEyes()
